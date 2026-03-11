@@ -1,0 +1,35 @@
+header{
+  background-color: pink;
+}
+
+main{
+  background-color: antiquewhite;
+}
+
+div{
+  margin: 1rem;
+}
+
+#blog-head{
+  background-color: violet;
+}
+
+#tag-list{
+  background-color: aliceblue;
+}
+
+#blog-list{
+  background-color: aquamarine;
+}
+
+.blog-article{
+  background-color: burlywood;
+}
+
+#page-nation{
+  background-color: yellowgreen;
+}
+
+footer{
+  background-color: turquoise;
+}
