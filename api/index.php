@@ -56,7 +56,7 @@
         <a href="https://scrapbox.io/api/pages/ryko-ryko/?skip=0&limit=5&sort=created" target="_blank">link</a>
 
         <?php
-        $url = "https://scrapbox.io/api/pages/ryko-ryko/?skip=0&limit=5&sort=created";
+        $url = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
         // 新しい cURL セッションを初期化します
         // コネクションを開く
         $ch = curl_init(); // はじめ
@@ -143,42 +143,46 @@
 
     <div id="blog-list">
       <h2>ブログ一覧</h2>
-      最新(OR 検索結果)のブログ一覧(最初の5件)
+      最新(OR 検索結果)のブログ一覧(最初の5件だけを表示できるようにしたい)
       <p>
         <?php
         for ($i = 0; $i < count($pages); $i++) {
           $title = $pages[$i]->title;
 
-          // 個ページについて
-          $single_url = ("https://scrapbox.io/api/pages/ryko-ryko/" . $title);
-          // 新しい cURL セッションを初期化します
-          // コネクションを開く
-          $ch_single = curl_init(); // はじめ
+          if (!$pages[$i]->pin) {
+            //  ピン止めされている投稿は除外
+            //  top, setting, タグの説明など
+
+
+            // 個ページについて
+            $single_url = ("https://scrapbox.io/api/pages/ryko-ryko/" . $title);
+            // 新しい cURL セッションを初期化します
+            // コネクションを開く
+            $ch_single = curl_init(); // はじめ
         
-          //オプション
-          curl_setopt($ch_single, CURLOPT_URL, $single_url);
-          curl_setopt($ch_single, CURLOPT_RETURNTRANSFER, true);
-          $html_single = curl_exec($ch_single);
+            //オプション
+            curl_setopt($ch_single, CURLOPT_URL, $single_url);
+            curl_setopt($ch_single, CURLOPT_RETURNTRANSFER, true);
+            $html_single = curl_exec($ch_single);
 
-          // タイトルを表示
-          $decodedResults_single = json_decode($html_single);
+            // タイトルを表示
+            $decodedResults_single = json_decode($html_single);
 
-          $lines = $decodedResults_single->lines;
+            $lines = $decodedResults_single->lines;
 
-          echo ("<div class=\"blog-article\">\n");
-          echo ("<h2>");
-          echo ($title);
-          echo ("</h2>");
+            echo ("<div class=\"blog-article\">\n");
+            echo ("<h2>");
+            echo ($title);
+            echo ("</h2>");
 
-          for ($j = 1; $j < count($lines); $j++) {
-            echo ("<p>");
-            echo ($lines[$j]->text);
-            echo ("</p>");
+            for ($j = 1; $j < count($lines); $j++) {
+              echo ("<p>");
+              echo ($lines[$j]->text);
+              echo ("</p>");
+            }
+
+            echo ("</div>\n");
           }
-
-
-
-          echo ("</div>\n");
         }
         ?>
 
