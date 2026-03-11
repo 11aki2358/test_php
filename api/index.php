@@ -48,21 +48,8 @@
 
     <div id="tag-list">
       <h2>検索用のタグリスト</h2>
-      <ul>
-        <li>
-          Scrapboxにて、ピン止めされたページ<b>tags</b>を作る
-        </li>
-        <li>
-          <b>tags</b>ページの内容を表示する。
-        </li>
-        <li>
-          Scrapboxから読み取った<code>[AAA]</code>とか<code>[BBB]</code>とかの文字列を、タグ用のボタンに変換する。
-        </li>
-        <li><code>AAA</code>ボタンが押された → <code>[AAA]</code>を含む記事を検索する(<a
-            href="https://scrapbox.io/api/pages/ryko-ryko/search/query?q=2026" target="_blank">例: 「2026」を含む記事を検索</a>) →
-          ブログ一覧に表示する
-        </li>
-      </ul>
+
+
 
       <p>
         検索かけない場合には、最新の記事5個を、created順に拾ってくる<br>
@@ -85,6 +72,73 @@
         $pages = $decodedResults->pages;
         ?>
       </p>
+
+      <ul>
+        <li>
+          Scrapboxにて、ピン止めされたページ<b>tags</b>を作る
+        </li>
+        <li>
+          <b>tags</b>ページの内容を表示する。
+        </li>
+        <li>
+          Scrapboxから読み取った<code>[AAA]</code>とか<code>[BBB]</code>とかの文字列を、タグ用のボタンに変換する。
+        </li>
+        <li><code>AAA</code>ボタンが押された → <code>[AAA]</code>を含む記事を検索する(<a
+            href="https://scrapbox.io/api/pages/ryko-ryko/search/query?q=2026" target="_blank">例: 「2026」を含む記事を検索</a>) →
+          ブログ一覧に表示する
+        </li>
+      </ul>
+    </div>
+
+
+
+    <div>
+      <h2>めも</h2>
+
+      <p>
+        初期や検索では、該当するページのtitleのみを気にする(プロジェクト内ページ全文検索 / プロジェクト内のページ情報)。
+        (検索の場合、limit/skipを指定できない点に注意。)
+      </p>
+      <p>
+        各ページ(.blog-article)を表示する際に、記事の冒頭・更新日時・サムネ画像諸々を取得する
+      </p>
+
+      ページの情報の取得
+      <ul>
+        <li>
+          個別のページ情報<br>
+          作成/更新日時や画像URLも取得できる<br>
+          <a href="https://scrapbox.io/api/pages/ryko-ryko/top" target="_blank">画像あり(<b>top</b>)</a><br>
+          <a href="https://scrapbox.io/api/pages/ryko-ryko/20260218" target="_blank">画像無し(<b>20260218</b>)</a>
+        </li>
+        <li>
+          指定したページのプレーンなテキスト。ブラケットなどはそのまま維持(今回は、<b>20260301</b>)
+          <a href="https://scrapbox.io/api/pages/ryko-ryko/20260301/text" target="_blank">link</a>
+        </li>
+        <li>
+          プロジェクト内のページ一覧と、各ページの[リンク]情報が取得できる(作成日時が古い順)<br>
+          <a href="https://scrapbox.io/api/pages/ryko-ryko/search/titles" target="_blank">link</a>
+        </li>
+      </ul>
+
+      全文検索
+      <ul>
+        <li>
+          プロジェクト内ページ全文検索。複数語句検索は出来る、マイナス検索は怪しい?<br>
+          <a href="https://scrapbox.io/api/pages/ryko-ryko/search/query?q=2026" target="_blank">例: 「2026」を含む記事を検索</a>
+        </li>
+      </ul>
+
+      Projectの情報を取得する
+      <ul>
+        <li>プロジェクト内のページ情報<br>
+          <code>limit</code>: 取得するページ情報の最大数<br>
+          <code>skip</code>: 何番目のページから取得するかを指定する<br>
+          <code>sort</code>: ソート方法(`updated`,`created`,`accessed`,`linked`,`views`,`title`,`updatedbyMe`)<br>
+          <a href="https://scrapbox.io/api/pages/ryko-ryko" target="_blank">link</a>
+        </li>
+      </ul>
+
     </div>
 
     <div id="blog-list">
@@ -92,12 +146,38 @@
       最新(OR 検索結果)のブログ一覧(最初の5件)
       <p>
         <?php
-
-
         for ($i = 0; $i < count($pages); $i++) {
           $title = $pages[$i]->title;
+
+          // 個ページについて
+          $single_url = ("https://scrapbox.io/api/pages/ryko-ryko/" . $title);
+          // 新しい cURL セッションを初期化します
+          // コネクションを開く
+          $ch_single = curl_init(); // はじめ
+        
+          //オプション
+          curl_setopt($ch_single, CURLOPT_URL, $single_url);
+          curl_setopt($ch_single, CURLOPT_RETURNTRANSFER, true);
+          $html_single = curl_exec($ch_single);
+
+          // タイトルを表示
+          $decodedResults_single = json_decode($html_single);
+
+          $lines = $decodedResults_single->lines;
+
           echo ("<div class=\"blog-article\">\n");
+          echo ("<h2>");
           echo ($title);
+          echo ("</h2>");
+
+          for ($j = 1; $j < count($lines); $j++) {
+            echo ("<p>");
+            echo ($lines[$j]->text);
+            echo ("</p>");
+          }
+
+
+
           echo ("</div>\n");
         }
         ?>
