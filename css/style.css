@@ -1,35 +1,60 @@
-header{
+header {
   background-color: pink;
 }
 
-main{
+main {
   background-color: antiquewhite;
 }
 
-div{
+div {
   margin: 1rem;
 }
 
-#blog-head{
+#blog-head {
   background-color: violet;
 }
 
-#tag-list{
+#tag-list {
   background-color: aliceblue;
 }
 
-#blog-list{
+#blog-list {
   background-color: aquamarine;
 }
 
-.blog-article{
+.blog-article {
   background-color: burlywood;
 }
 
-#page-nation{
+.blog-article p {
+  margin: 0;
+  height: fit-content;
+  min-height: 1rem;
+  padding-bottom: 1rem;
+}
+
+.Gyazo {
+  background-color: cadetblue;
+}
+
+.link-with-name {
+  background-color: red;
+}
+
+.normal-url {
+  background-color: tomato;
+}
+
+
+.normal-url2 {
+  background-color: coral;
+}
+
+
+#page-nation {
   background-color: yellowgreen;
 }
 
-footer{
+footer {
   background-color: turquoise;
 }
