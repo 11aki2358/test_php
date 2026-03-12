@@ -144,7 +144,6 @@ if (array_key_exists('ReadMore', $_GET)) {
 
   }
 
-  var_dump($_SESSION['pages_all']);
 
 }
 ?>
