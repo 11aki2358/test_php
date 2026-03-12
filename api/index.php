@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/css/style.css">
 
 <?php
+session_start();
 ?>
 
 <html>
@@ -33,45 +34,39 @@
     <div id="tag-list">
       <h2>検索用のタグリスト</h2>
 
-
-
       <p>
         検索かけない場合には、最新の記事5個を、created順に拾ってくる<br>
         <a href="https://scrapbox.io/api/pages/ryko-ryko/?skip=0&limit=5&sort=created" target="_blank">link</a>
 
         <?php
-        if (!isset($_SESSION["pages_all"])) {
 
-          $url_all = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
-          // 新しい cURL セッションを初期化します
-          // コネクションを開く
-          $ch_all = curl_init(); // はじめ
+        $url_all = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
+        // 新しい cURL セッションを初期化します
+        // コネクションを開く
+        $ch_all = curl_init(); // はじめ
         
-          //オプション
-          curl_setopt($ch_all, CURLOPT_URL, $url_all);
-          curl_setopt($ch_all, CURLOPT_RETURNTRANSFER, true);
-          $html_all = curl_exec($ch_all);
-          // var_dump($html);
+        //オプション
+        curl_setopt($ch_all, CURLOPT_URL, $url_all);
+        curl_setopt($ch_all, CURLOPT_RETURNTRANSFER, true);
+        $html_all = curl_exec($ch_all);
+        // var_dump($html);
         
-          // タイトルを表示
-          $decodedResults_all = json_decode($html_all);
-          $pages_all = $decodedResults_all->pages;
-          $_SESSION['pages_all'] = $pages_all;
+        // タイトルを表示
+        $decodedResults_all = json_decode($html_all);
+        $pages_all = $decodedResults_all->pages;
+        $_SESSION['pages_all'] = $pages_all;
 
-
-          //  ピンがついていない要素(一覧に乗るやつ)を抽出する
-          $pages_unpin = array();
-          for ($i = 0; $i < count($pages_all); $i++) {
-            //  ピン止めされていないpageのみ、一覧に表示する
-            if (!$pages_all[$i]->pin) {
-              array_push($pages_unpin, $pages_all[$i]);
-            }
+        //  ピンがついていない要素(一覧に乗るやつ)を抽出する
+        $pages_unpin = array();
+        for ($i = 0; $i < count($pages_all); $i++) {
+          //  ピン止めされていないpageのみ、一覧に表示する
+          if (!$pages_all[$i]->pin) {
+            array_push($pages_unpin, $pages_all[$i]);
           }
-
-          // $decodedResults = $decodedResults_all;
-          // $pages = $pages_all;
-          $pages = $pages_unpin;
         }
+
+        $pages = $pages_unpin;
+        $_SESSION['pages'] = $pages;
 
         ?>
       </p>
@@ -140,6 +135,7 @@
         // タイトルを表示
         unset($GLOBALS['decodedResults']);
         unset($GLOBALS['pages']);
+        unset($GLOBALS['pages_unpin']);
         $decodedResults_tag = json_decode($html_tag);
         $pages_tag = $decodedResults_tag->relatedPages->links1hop;
 
@@ -155,7 +151,8 @@
             array_push($pages_unpin, $pages_tag[$i]);
           }
         }
-        $pages = $pages_unpin;
+        $GLOBALS['pages'] = $pages_unpin;
+        $_SESSION['pages'] = $pages;
 
       }
       ?>
@@ -223,12 +220,11 @@
         //  いまから、 $now_page*5 ~ $now_page*5+5
         $now_page = 0;
 
-        for ($i = $now_page; ($i < count($pages)); $i++) {
 
+        for ($i = $now_page; ($i < count($pages) && ($i < $now_page + 5)); $i++) {
 
           $title = $pages[$i]->title;
           $search_result = array_search($title, array_column($pages_all, "title"));
-
 
           //  ピン止めされている投稿は除外
           //  top, setting, タグの説明など
@@ -256,6 +252,56 @@
           echo ("</div>\n");
         }
 
+        echo ("<span>");
+        echo ("<form method=\"get\">");
+        echo ("<button type=\"submit\" name=\"LoadMore\" value=\"" . $now_page . "\" >記事を増やす</button>");
+        echo ("</form>");
+        echo ("</span>");
+        echo ("</div>\n");
+
+        if (array_key_exists('LoadMore', $_GET)) {
+
+          $now_page = htmlspecialchars($_GET['LoadMore'], ENT_QUOTES);
+
+          for ($i = $now_page * 5; ($i < count($_SESSION['pages']) && ($i < $now_page * 5 + 5)); $i++) {
+
+            $title = $_SESSION['pages'][$i]->title;
+            $search_result = array_search($title, array_column($pages_all, "title"));
+
+            //  ピン止めされている投稿は除外
+            //  top, setting, タグの説明など
+        
+            echo ("<div class=\"blog-article\">\n");
+            echo ("<h2>");
+            echo ($title);
+            echo ("</h2>");
+
+            echo ("<div class=\"article-descriptions\">");
+
+            $index = 0;
+            while ($index <= (count($pages_all[$search_result]->descriptions)) - 1) {
+              echo ($pages_all[$search_result]->descriptions[$index]);
+              echo ("<br>");
+              $index++;
+            }
+            echo ("</div>");
+
+            echo ("<span>");
+            echo ("<form action=\"single_page.php\"  method=\"get\">");
+            echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
+            echo ("</form>");
+            echo ("</span>");
+            echo ("</div>\n");
+          }
+
+          echo ("<span>");
+          echo ("<form method=\"get\">");
+          echo ("<button type=\"submit\" name=\"LoadMore\" value=\"" . $now_page + 1 . "\" >記事を増やす</button>");
+          echo ("</form>");
+          echo ("</span>");
+          echo ("</div>\n");
+
+        }
 
         ?>
 
