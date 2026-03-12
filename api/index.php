@@ -1,7 +1,12 @@
 <link rel="stylesheet" href="/css/style.css">
 
 <?php
-session_start();
+
+
+$now_page = 0;
+$pages_all;
+$tag = "XXX";
+
 ?>
 
 <html>
@@ -54,7 +59,6 @@ session_start();
         // タイトルを表示
         $decodedResults_all = json_decode($html_all);
         $pages_all = $decodedResults_all->pages;
-        $_SESSION['pages_all'] = $pages_all;
 
         //  ピンがついていない要素(一覧に乗るやつ)を抽出する
         $pages_unpin = array();
@@ -66,7 +70,6 @@ session_start();
         }
 
         $pages = $pages_unpin;
-        $_SESSION['pages'] = $pages;
 
         ?>
       </p>
@@ -103,58 +106,29 @@ session_start();
       // タイトルを表示
       $lines = $decodedResults_tags->lines;
 
+      echo ("<span>");
+      echo ("<form action=\"\"  method=\"post\">");
+      echo ("<input type=\"hidden\" name=\"test\" value=\"xxx\" />");
+      echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
+      echo ("<input type=\"submit\" value=\"created\">");
+
+      echo ("</form>");
+      echo ("</span>");
+
 
       for ($i = 1; $i < count($lines); $i++) {
         $tag_name = preg_replace('/\[|\]/', "", $lines[$i]->text);
 
         echo ("<span>");
-        echo ("<form method=\"get\">");
-        echo ("<input type=\"submit\" name=\"test\" value=\"" . $tag_name . "\" />");
+        echo ("<form action=\"\"  method=\"post\">");
+        echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" />");
+        echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
+        echo ("<input type=\"submit\" value=\"" . $tag_name . "\">");
+
         echo ("</form>");
         echo ("</span>");
       }
 
-
-      if (array_key_exists('test', $_GET)) {
-
-        $tag = htmlspecialchars($_GET['test'], ENT_QUOTES);
-
-        // タグの情報をもとに、APIを叩く
-        //  日本語をURLに含めるときは、エンコードが必要!
-        $url_tag = ("https://scrapbox.io/api/pages/ryko-ryko/" . urlencode($tag));
-        // 新しい cURL セッションを初期化します
-        // コネクションを開く
-      
-        $ch_tag = curl_init(); // はじめ
-      
-        //オプション
-        curl_setopt($ch_tag, CURLOPT_URL, $url_tag);
-        curl_setopt($ch_tag, CURLOPT_RETURNTRANSFER, true);
-        $html_tag = curl_exec($ch_tag);
-
-        // タイトルを表示
-        unset($GLOBALS['decodedResults']);
-        unset($GLOBALS['pages']);
-        unset($GLOBALS['pages_unpin']);
-        $decodedResults_tag = json_decode($html_tag);
-        $pages_tag = $decodedResults_tag->relatedPages->links1hop;
-
-        //  ピンがついていない要素(一覧に乗るやつ)を抽出する
-        $pages_unpin = array();
-        for ($i = 0; $i < count($pages_tag); $i++) {
-
-          $title = $pages_tag[$i]->title;
-          $search_result = array_search($title, array_column($pages_all, "title"));
-
-          //  ピン止めされていないpageのみ、一覧に表示する
-          if (!$pages_all[$search_result]->pin) {
-            array_push($pages_unpin, $pages_tag[$i]);
-          }
-        }
-        $GLOBALS['pages'] = $pages_unpin;
-        $_SESSION['pages'] = $pages;
-
-      }
       ?>
 
     </div>
@@ -217,92 +191,84 @@ session_start();
       <p>
         <?php
 
-        //  いまから、 $now_page*5 ~ $now_page*5+5
-        $now_page = 0;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+          if (array_key_exists('test', $_POST)) {
+
+            $tag = htmlspecialchars($_POST['test'], ENT_QUOTES);
+            $now_page = htmlspecialchars($_POST['LoadMore'], ENT_QUOTES);
 
 
-        for ($i = $now_page; ($i < count($pages) && ($i < $now_page + 5)); $i++) {
+            if (!($tag === "xxx")) {
 
-          $title = $pages[$i]->title;
-          $search_result = array_search($title, array_column($pages_all, "title"));
-
-          //  ピン止めされている投稿は除外
-          //  top, setting, タグの説明など
+              // タグの情報をもとに、APIを叩く
+              //  日本語をURLに含めるときは、エンコードが必要!
+              $url_tag = ("https://scrapbox.io/api/pages/ryko-ryko/" . urlencode($tag));
+              // 新しい cURL セッションを初期化します
+              // コネクションを開く
         
-          echo ("<div class=\"blog-article\">\n");
-          echo ("<h2>");
-          echo ($title);
-          echo ("</h2>");
-
-          echo ("<div class=\"article-descriptions\">");
-
-          $index = 0;
-          while ($index <= (count($pages_all[$search_result]->descriptions)) - 1) {
-            echo ($pages_all[$search_result]->descriptions[$index]);
-            echo ("<br>");
-            $index++;
-          }
-          echo ("</div>");
-
-          echo ("<span>");
-          echo ("<form action=\"single_page.php\"  method=\"get\">");
-          echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
-          echo ("</form>");
-          echo ("</span>");
-          echo ("</div>\n");
-        }
-
-        echo ("<span>");
-        echo ("<form method=\"get\">");
-        echo ("<button type=\"submit\" name=\"LoadMore\" value=\"" . $now_page . "\" >記事を増やす</button>");
-        echo ("</form>");
-        echo ("</span>");
-        echo ("</div>\n");
-
-        if (array_key_exists('LoadMore', $_GET)) {
-
-          $now_page = htmlspecialchars($_GET['LoadMore'], ENT_QUOTES);
-
-          for ($i = $now_page * 5; ($i < count($_SESSION['pages']) && ($i < $now_page * 5 + 5)); $i++) {
-
-            $title = $_SESSION['pages'][$i]->title;
-            $search_result = array_search($title, array_column($pages_all, "title"));
-
-            //  ピン止めされている投稿は除外
-            //  top, setting, タグの説明など
+              $ch_tag = curl_init(); // はじめ
         
-            echo ("<div class=\"blog-article\">\n");
-            echo ("<h2>");
-            echo ($title);
-            echo ("</h2>");
+              //オプション
+              curl_setopt($ch_tag, CURLOPT_URL, $url_tag);
+              curl_setopt($ch_tag, CURLOPT_RETURNTRANSFER, true);
+              $html_tag = curl_exec($ch_tag);
 
-            echo ("<div class=\"article-descriptions\">");
+              $decodedResults_tag = json_decode($html_tag);
+              $pages = $decodedResults_tag->relatedPages->links1hop;
 
-            $index = 0;
-            while ($index <= (count($pages_all[$search_result]->descriptions)) - 1) {
-              echo ($pages_all[$search_result]->descriptions[$index]);
-              echo ("<br>");
-              $index++;
+              //  ピンがついていない要素(一覧に乗るやつ)を抽出する
+              $pages_unpin = array();
             }
-            echo ("</div>");
 
+            $j = 0;
+            for ($i = $now_page * 5; ($i < count($pages) && ($j < 4)); $i++) {
+
+              // $title = $pages_tag[$i]->title;
+              $title = $pages[$i]->title;
+              $search_result = array_search($title, array_column($pages_all, "title"));
+
+              //  ピン止めされていないpageのみ、一覧に表示する
+              if (!$pages_all[$search_result]->pin) {
+
+                $j++;
+
+                echo ("<div class=\"blog-article\">\n");
+                echo ("<h2>");
+                echo ($title);
+                echo ("</h2>");
+
+                echo ("<div class=\"article-descriptions\">");
+
+                $index = 0;
+                while ($index <= (count($pages_all[$search_result]->descriptions)) - 1) {
+                  echo ($pages_all[$search_result]->descriptions[$index]);
+                  echo ("<br>");
+                  $index++;
+                }
+                echo ("</div>");
+
+                echo ("<span>");
+                echo ("<form action=\"single_page.php\"  method=\"get\">");
+                echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
+                echo ("</form>");
+                echo ("</span>");
+                echo ("</div>\n");
+
+              }
+            }
+
+            $now_page++;
             echo ("<span>");
-            echo ("<form action=\"single_page.php\"  method=\"get\">");
-            echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
+            echo ("<form action=\"\"  method=\"post\">");
+            echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag . "\" />");
+            echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
+            echo ("<input type=\"submit\" value=\"おためし\">");
             echo ("</form>");
             echo ("</span>");
-            echo ("</div>\n");
           }
-
-          echo ("<span>");
-          echo ("<form method=\"get\">");
-          echo ("<button type=\"submit\" name=\"LoadMore\" value=\"" . $now_page + 1 . "\" >記事を増やす</button>");
-          echo ("</form>");
-          echo ("</span>");
-          echo ("</div>\n");
-
         }
-
+        echo ("</div>\n");
         ?>
 
       </p>
@@ -320,5 +286,11 @@ session_start();
     </h1>
   </footer>
 </body>
+
+<?php
+
+
+?>
+
 
 </html>
