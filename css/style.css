@@ -26,6 +26,10 @@ div {
   background-color: burlywood;
 }
 
+.article-descriptions{
+  background-color: beige;
+}
+
 .blog-article p {
   margin: 0;
   height: fit-content;
