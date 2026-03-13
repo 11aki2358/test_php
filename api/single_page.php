@@ -1,21 +1,36 @@
-<link rel="stylesheet" href="/css/style.css">
-
 <html>
 
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="googlebot" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="Ryko: Ryko" />
+  <meta property="og:description" content="オタクのサイト。" />
+  <meta property="og:image" content="https://ryko-ryko.vercel.app/images/OGP.png" />
+  <meta name="theme-color" content="#000000">
+  <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+xml">
+  <title>Ryko: Ryko</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
   <header>
-    <h1>
-      header
-    </h1>
-    
-    <a href="javascript:history.back()">前に戻る</a>
+    <nav>
+      <div class="header-logo-menu">
+        <div class="logo-area">
+          <h1><a href="javascript:history.back()">Ryko: Ryko</a></h1>
+        </div>
+      </div>
+      </div>
+    </nav>
   </header>
+
+
   <main>
 
-    <div id="blog-article">
+    <div class="blog-article">
       <?php
       if (array_key_exists('ReadMore', $_GET)) {
 
@@ -39,13 +54,16 @@
         echo ($decodedResults_single->title);
         echo ("</h2>");
 
+        echo ("<div class=\"article-area\">");
+
+
         $create_date = date('Y/m/d H:i:s', $decodedResults_single->created);
-        echo ("<div class=\"date\">");
+        echo ("<div class=\"date-box\">");
         echo ("created: " . $create_date);
         echo ("</div>");
 
         $updated_date = date('Y/m/d H:i:s', $decodedResults_single->updated);
-        echo ("<div class=\"date\">");
+        echo ("<div class=\"date-box\">");
         echo ("updated: " . $updated_date);
         echo ("</div>");
 
@@ -177,7 +195,7 @@
               $tag_name = mb_substr($line_text, $pos_tag_b + 1, $pos_tag_e - $pos_tag_b - 1);
 
               //  タグの名前にhtml付けたやつ
-              $tag_code = ("<form action=\"index.php\"  method=\"post\"><input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" /><input type=\"hidden\" name=\"LoadMore\" value=\"0\" /><input type=\"submit\" value=\"" . $tag_name . "\"></form>");
+              $tag_code = ("<span><form action=\"index.php\"  method=\"post\"><input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" /><input type=\"hidden\" name=\"LoadMore\" value=\"0\" /><label for=\"" . $tag_name . "\" class=\"tag-label\">" . $tag_name . "</label><input class=\"hidden-button\" id=\"" . $tag_name . "\"  type=\"submit\" value=\"" . $tag_name . "\"></form></span>");
 
               //  タグの前にあるテキスト
               $tag_before = mb_substr($line_text, 0, $pos_tag_b);
@@ -201,18 +219,39 @@
           $j++;
 
         }
-
+        echo ("</div>");
       }
+      ?>
+    </div>
+
+    <div class="return-area">
+      <div  class="return-button">
+        <a href="javascript:history.back()">Return</a>
+      </div>
+    </div>
+
+    <div id="edit-link">
+      <?php
+      $url_sbx = ("https://scrapbox.io/ryko-ryko/" . urlencode($load_title));
+
+      echo ("<a href=\"" . $url_sbx . "\" target=\"_blank\">edit</a>");
       ?>
     </div>
 
   </main>
   <footer>
-    <h1>
-      footer
-    </h1>
-    <a href="javascript:history.back()">前に戻る</a>
+    <button id="back-to-top"></button>
   </footer>
 </body>
+
+<script>
+
+  const backToTop = document.getElementById('back-to-top');
+
+  // トップに戻る
+  backToTop.onclick = function () {
+    window.scrollTo(0, 0);
+  };
+</script>
 
 </html>

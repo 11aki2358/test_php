@@ -29,6 +29,7 @@ main {
   width: 90%;
   margin: auto;
   height: 100%;
+  max-width: 110vh;
 }
 
 
@@ -144,6 +145,10 @@ header nav a {
     font-size: 38px;
   }
 
+  h1 a {
+    font-size: 38px;
+  }
+
 }
 
 
@@ -183,7 +188,14 @@ a[target="_blank"]::after {
   content: "↗";
 }
 
+a[target="_blank"].banner-link img {
+  max-height: 8vh;
+  width: fit-content;
+}
 
+a[target="_blank"].banner-link::after {
+  content: "";
+}
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -261,14 +273,11 @@ h1 {
   margin-bottom: auto;
   font-size: 7.5vw;
   transform: scale(1, 1.2);
-}
-
-h1 a {
   color: var(--type1-link-color1);
   font-family: 'Kanit', sans-serif;
 }
 
-h1 a:hover {
+h1:hover {
   color: var(--type1-link-color1);
   background-color: white;
   font-weight: bold;
@@ -281,6 +290,14 @@ h2 {
   z-index: -1;
 }
 
+h3 {
+  border-left: dashed black 4px;
+  padding-left: 1rem;
+}
+
+.tag-detail h3::before {
+  content: "#";
+}
 
 /* 以下、てきとう */
 
@@ -295,8 +312,36 @@ form {
 #tag-list {
   margin: 1rem;
   padding: 1rem;
-  background-color: violet;
+  border: dotted black 3px;
+
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem .8rem;
 }
+
+.tag-label {
+  padding: .2rem;
+  display: inline;
+  background-color: var(--type1-main-color);
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.tag-label:hover {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+}
+
+.tag-label::before {
+  content: "#";
+}
+
+.hidden-button {
+  display: none;
+}
+
 
 #blog-list {
   /* background-color: aquamarine; */
@@ -304,19 +349,29 @@ form {
   padding: 0;
 }
 
+
+
 .blog-article {
   /* background-color: aliceblue; */
   margin-left: 0;
   margin-right: 0;
 }
 
-.blog-article h2 {
+.blog-article h2,
+.tag-detail h2 {
   padding-top: 0;
   margin-top: 0;
   z-index: 1;
   transform: scale(1, 1);
   margin-bottom: 0;
+  font-size: 2em;
 }
+
+.tag-detail h2::after {
+  display: inline;
+  content: ("#");
+}
+
 
 .blog-article .date-box {
   /* background-color: antiquewhite; */
@@ -351,7 +406,7 @@ form {
   justify-content: center;
 }
 
-.ReadMore-area form{
+.ReadMore-area form {
   margin: 0;
 }
 
@@ -364,6 +419,7 @@ form {
   text-decoration: none;
   transition: .3s;
   background-color: white;
+  font-weight: bold;
 }
 
 .ReadMore-button:hover {
@@ -378,6 +434,8 @@ form {
   min-height: 1rem;
   padding-bottom: 1rem;
 }
+
+/* 
 
 .Gyazo {
   background-color: cadetblue;
@@ -398,13 +456,19 @@ form {
 
 .article-tag {
   background-color: blueviolet;
-}
+} 
+  
+*/
 
 
 /*  */
 
-#page-nation {
-  background-color: yellowgreen;
+#page-nation-area {
+  /* background-color: yellowgreen; */
+  display: flex;
+  margin-top: 2.5rem;
+  padding: 1rem;
+  justify-content: space-between;
 }
 
 #prev_arrow,
@@ -413,19 +477,101 @@ form {
 }
 
 #prev-label,
+#now-label,
 #next-label {
-  display: block;
-  background-color: pink;
+  font-weight: bold;
+  display: inline;
+  padding: .4rem;
+  border: solid black 2px;
+  background-color: black;
+  color: white;
+}
+
+#now-label {
+  background-color: white;
+  color: black;
+}
+
+#prev-label:hover,
+#next-label:hover {
+  cursor: pointer;
+  background-color: var(--type1-main-color);
+  color: black;
 }
 
 footer {
   background-color: turquoise;
 }
 
-/* single_page */
+/* footer */
 
-#blog-article {
-  margin: 1rem;
-  background-color: mediumturquoise;
+footer {
+  margin-left: 0;
+  margin-right: 0;
+  background-color: black;
+}
 
+footer {
+  grid-row: 3/3;
+  grid-column: 1/1;
+  width: 100%;
+  height: 10vh;
+  bottom: 0;
+}
+
+/* back to topボタン */
+
+footer #back-to-top {
+  display: block;
+  background-image: url(/images/toTop.svg);
+  background-size: 100%;
+  border: none;
+  outline: none;
+  width: 12vh;
+  height: 8vh;
+  position: fixed;
+  bottom: 1vh;
+  right: 5vw;
+  z-index: 9;
+}
+
+footer #back-to-top:hover {
+  transform: translateY(0.2vh);
+  /* transform: translateX(0.2vh); */
+}
+
+footer a[target="_blank"].banner-link {
+  position: fixed;
+  bottom: 1vh;
+  left: 5%;
+  z-index: 9;
+}
+
+
+/*  */
+.return-area {
+  display: flex;
+  justify-content: center;
+}
+
+.return-button{
+  border: solid black 2px;
+  padding: .5rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: black;
+}
+
+.return-button:hover{
+  background-color: var(--type1-main-color);
+  color: black;
+}
+
+#edit-link {
+  text-align: right;
+}
+
+#edit-link a[target="_blank"] {
+  content: "";
+  color: black;
 }

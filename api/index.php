@@ -12,7 +12,7 @@ function show_article($page_array, $i)
   echo ($title);
   echo ("</h2>");
 
-  echo("<div class=\"article-area\">");
+  echo ("<div class=\"article-area\">");
 
   $create_date = date('Y/m/d H:i:s', $page_array[$i]->created);
   echo ("<div class=\"date-box\">");
@@ -237,7 +237,7 @@ function show_next_page($now_page, $tag)
     <nav>
       <div class="header-logo-menu">
         <div class="logo-area">
-          <h1><a href="top.html">Ryko: Ryko</a></h1>
+          <h1><a>Ryko: Ryko</a></h1>
         </div>
       </div>
       </div>
@@ -247,52 +247,42 @@ function show_next_page($now_page, $tag)
   <main>
 
     <article>
-      <h2>blog-head</h2>
+      <h2 style="color:black">(This Bird Has Flown)</h2>
       <div>
-        <ul>
-          <li>
-            メインのサイトへのリンク
-          </li>
-          <li>
-            ブログの紹介
-          </li>
-        </ul>
-        <a href="https://scrapbox.io/scrapboxlab/Scrapbox_REST_API%E3%81%AE%E4%B8%80%E8%A6%A7" target="_blank">Scrapbox
-          REST
-          APIの一覧</a>
+        オタクの <span style="text-decoration: line-through">ツイッt</span> ブログ。<br>
+        本拠地は個人サイト : 
+        <a href="https://ryko-ryko.vercel.app/index.html" target="_blank">Ryko: Ryko</a>
       </div>
     </article>
 
     <article>
       <div id="tag-list">
 
-        <p>
-          <?php
+        <?php
 
-          $url_all = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
-          // 新しい cURL セッションを初期化
-          // コネクションを開く
-          $ch_all = curl_init();
-          curl_setopt($ch_all, CURLOPT_URL, $url_all);
-          curl_setopt($ch_all, CURLOPT_RETURNTRANSFER, true);
-          $html_all = curl_exec($ch_all);
+        $url_all = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
+        // 新しい cURL セッションを初期化
+        // コネクションを開く
+        $ch_all = curl_init();
+        curl_setopt($ch_all, CURLOPT_URL, $url_all);
+        curl_setopt($ch_all, CURLOPT_RETURNTRANSFER, true);
+        $html_all = curl_exec($ch_all);
 
-          $decodedResults_all = json_decode($html_all);
-          $pages_all = $decodedResults_all->pages;
+        $decodedResults_all = json_decode($html_all);
+        $pages_all = $decodedResults_all->pages;
 
-          //  ピンがついていない要素(一覧に乗るやつ)を抽出する
-          $pages_unpin = array();
-          for ($i = 0; $i < count($pages_all); $i++) {
-            //  ピン止めされていないpageのみ、一覧に表示する
-            if (!$pages_all[$i]->pin) {
-              array_push($pages_unpin, $pages_all[$i]);
-            }
+        //  ピンがついていない要素(一覧に乗るやつ)を抽出する
+        $pages_unpin = array();
+        for ($i = 0; $i < count($pages_all); $i++) {
+          //  ピン止めされていないpageのみ、一覧に表示する
+          if (!$pages_all[$i]->pin) {
+            array_push($pages_unpin, $pages_all[$i]);
           }
+        }
 
-          $pages = $pages_unpin;
+        $pages = $pages_unpin;
 
-          ?>
-        </p>
+        ?>
 
         <?php
 
@@ -314,7 +304,8 @@ function show_next_page($now_page, $tag)
         echo ("<form action=\"\"  method=\"post\">");
         echo ("<input type=\"hidden\" name=\"test\" value=\"xxx\" />");
         echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
-        echo ("<input type=\"submit\" value=\"created\">");
+        echo ("<label for=\"created\" class=\"tag-label\">最新</label>");
+        echo ("<input class=\"hidden-button\" id=\"created\"  type=\"submit\" value=\"created\">");
 
         echo ("</form>");
         echo ("</span>");
@@ -327,7 +318,8 @@ function show_next_page($now_page, $tag)
           echo ("<form action=\"\"  method=\"post\">");
           echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" />");
           echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
-          echo ("<input type=\"submit\" value=\"" . $tag_name . "\">");
+          echo ("<label for=\"" . $tag_name . "\" class=\"tag-label\">" . $tag_name . "</label>");
+          echo ("<input class=\"hidden-button\" id=\"" . $tag_name . "\"  type=\"submit\" value=\"" . $tag_name . "\">");
           echo ("</form>");
           echo ("</span>");
         }
@@ -338,7 +330,6 @@ function show_next_page($now_page, $tag)
     </article>
 
     <article>
-      <!-- <h2>ブログ一覧</h2> -->
 
       <div id="blog-list">
         <p>
@@ -369,6 +360,17 @@ function show_next_page($now_page, $tag)
                 $decodedResults_tag = json_decode($html_tag);
                 $pages = $decodedResults_tag->relatedPages->links1hop;
 
+                // タグの説明
+                echo ("<div class=\"tag-detail\">");
+                echo ("<h3>" . $tag . "</h3>");
+                echo ("<div>");
+                $j = 0;
+                for ($j = 1; $j < count($decodedResults_tag->lines); $j++) {
+                  show_text($decodedResults_tag->lines[$j]->text);
+                }
+                echo ("</div>");
+                echo ("</div>");
+
                 $j = 0;
                 for ($i = $now_page * 6; ($i < count($pages) && ($j < 5)); $i++) {
 
@@ -386,13 +388,14 @@ function show_next_page($now_page, $tag)
                   }
                 }
 
+                echo ("<div id=\"page-nation-area\">");
                 if (1 <= $now_page) {
                   show_prev_page($now_page, $tag);
                 }
-
                 if ($now_page * 6 + 6 < count($pages)) {
                   show_next_page($now_page, $tag);
                 }
+                echo ("</div>");
 
               } else {
                 //  全件検索のとき
@@ -408,17 +411,16 @@ function show_next_page($now_page, $tag)
 
                 }
 
+                echo ("<div id=\"page-nation-area\">");
                 if (1 <= $now_page) {
                   show_prev_page($now_page, $tag);
                 }
-
+                echo ("<form><label id=\"now-label\">" . ($now_page + 1) . "</label></form>");
                 if ($now_page * 5 + 5 < count($pages)) {
                   show_next_page($now_page, $tag);
                 }
-
+                echo ("</div>");
               }
-
-
             }
           }
           echo ("</div>\n");
@@ -428,23 +430,23 @@ function show_next_page($now_page, $tag)
       </div>
     </article>
 
-    <h2>ページネーション</h2>
-    <div id="page-nation">
-      指定した検索条件のもとで、次の5件 (OR 前の5件)をAPI呼び出しする。と同時に、<b>ブログ一覧</b>の表示を上書きする
-    </div>
-
   </main>
   <!-- フッター -->
 
   <footer>
+    <a href="https://ryko-ryko.vercel.app/index.html" target="_blank" class="banner-link"><img src="/images/banner.png"></a>
     <button id="back-to-top"></button>
-    <nav>
-      <ul>
-        <li><a href="/index.html" class="btn btn-flat"><span>home</span></a></li>
-      </ul>
-    </nav>
   </footer>
 </body>
 
+<script>
+
+  const backToTop = document.getElementById('back-to-top');
+
+  // トップに戻る
+  backToTop.onclick = function () {
+    window.scrollTo(0, 0);
+  };
+</script>
 
 </html>
