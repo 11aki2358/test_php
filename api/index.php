@@ -1,11 +1,208 @@
 <link rel="stylesheet" href="/css/style.css">
 
+
 <?php
 
 
 $now_page = 0;
 $pages_all;
 $tag = "XXX";
+
+function show_article($page_array, $i)
+{
+  $title = $page_array[$i]->title;
+  echo ("<div class=\"blog-article\">\n");
+  echo ("<h2>");
+  echo ($title);
+  echo ("</h2>");
+
+  echo ("<div class=\"article-descriptions\">");
+
+  $index = 0;
+  while ($index <= (count($page_array[$i]->descriptions)) - 1) {
+    $description_text = $page_array[$i]->descriptions[$index];
+    // echo ($description_text);
+    // echo ("<br>");
+    show_text($description_text);
+    $index++;
+  }
+  echo ("</div>");
+  echo ("<span>");
+  echo ("<form action=\"single_page.php\"  method=\"get\">");
+  echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
+  echo ("</form>");
+  echo ("</span>");
+  echo ("</div>\n");
+}
+
+function show_text($input_text)
+{
+  if (!strcmp("...", $input_text)) {
+    //  "..." 以降の行はタグ情報なので、表示しない
+  }
+
+  if (preg_match('/\[https:\/\/gyazo.com\/\S*\]/', $input_text)) {
+    //  Gyazoの画像リンクを含む場合
+
+    //  例: 
+    //  [https://gyazo.com/5598422019d8c545c0dfe26b620dcf28]
+
+    echo ("<p class=\"Gyazo\">");
+
+    //  [https://gyazo.com/ が現れる位置
+    $pos_gz_b = mb_strpos($input_text, '[https://gyazo.com/');
+
+    //  ] Gyazoの閉じかっこが現れる位置
+    $pos_gz_e = mb_strpos($input_text, ']');
+
+    //  Gyazoのurl
+    $gyazo_url = mb_substr($input_text, $pos_gz_b + 1, $pos_gz_e - $pos_gz_b - 1);
+
+    echo (mb_substr($input_text, 0, $pos_gz_b));
+    echo ("<br>");
+
+    //  GyazoのAPIを叩いて、画像の埋め込みリンクを取得する
+    // コネクションを開く
+    $ch_gyazo = curl_init(); // はじめ
+
+    //オプション
+    $gyazo_api = ("https://api.gyazo.com/api/oembed?url=" . $gyazo_url);
+    curl_setopt($ch_gyazo, CURLOPT_URL, $gyazo_api);
+    curl_setopt($ch_gyazo, CURLOPT_RETURNTRANSFER, true);
+    $html_gyazo = curl_exec($ch_gyazo);
+
+    //  画像を表示
+    $gyazo_json = json_decode($html_gyazo);
+    echo ("<img src=\"" . $gyazo_json->url . "\">");
+    echo ("<br>");
+    echo (mb_substr($input_text, $pos_gz_e + 1, null));
+    echo ("</p>");
+
+  } else if (preg_match('/\[.*\shttp\S*\]/', $input_text)) {
+    //  名前付きのリンク
+    //  [リンク名 http...]
+
+    //  例: 
+    //  あいうえお[link name https://www.php.net/manual/ja/function.strpos.php]これがリンク
+    echo ("<p class=\"link-with-name\">");
+
+    //  [が現れる位置
+    $pos_bl = mb_strpos($input_text, '[');
+
+    //  http が現れる位置
+    $pos_http = mb_strpos($input_text, 'http');
+
+    //  ] が現れる位置
+    $pos_el = mb_strpos($input_text, ']');
+
+    echo (mb_substr($input_text, 0, $pos_bl));
+    echo (" <a href=\"");
+    echo (mb_substr($input_text, $pos_http, $pos_el - $pos_http));
+    echo ("\" target=\"_blank\">");
+    echo (mb_substr($input_text, $pos_bl + 1, $pos_http - $pos_bl - 2));
+    echo ("</a> ");
+    echo (mb_substr($input_text, $pos_el + 1, null));
+
+  } else if (preg_match('/http\S*\s/', $input_text)) {
+    //  名前のついていない、ただのurl
+
+    //  例
+    //  あいうえお https://www.webdesignleaves.com/pr/php/php_basic_03.php これがリンク
+
+    echo ("<p class=\"normal-url\">");
+
+    //  http が現れる位置
+    $pos_http = mb_strpos($input_text, 'http');
+
+    //  ' ' (リンクの終わり)が現れる位置
+    $pos_el = mb_strpos($input_text, ' ', $pos_http);
+
+    echo (mb_substr($input_text, 0, $pos_http));
+    echo (" <a href=\"");
+    echo (mb_substr($input_text, $pos_http, $pos_el - $pos_http));
+    echo ("\" target=\"_blank\">link</a> ");
+    echo (mb_substr($input_text, $pos_el + 1, null));
+
+  } else if (preg_match('/http\S*/', $input_text)) {
+    //  名前のついていない、ただのurl(空白無しで終わるやつ)
+
+    //  例
+    //  あいうえお https://www.webdesignleaves.com/pr/php/php_basic_03.php
+
+    echo ("<p class=\"normal-url2\">");
+
+    //  http が現れる位置
+    $pos_http = mb_strpos($input_text, 'http');
+
+    echo (mb_substr($input_text, 0, $pos_http));
+    echo (" <a href=\"");
+    echo (mb_substr($input_text, $pos_http, null));
+    echo ("\" target=\"_blank\">link</a> ");
+
+
+  } else if (preg_match('/\[.*\]/', $input_text)) {
+    //    [音楽]とかのタグを見つける
+    //  タグをクリックしたら、      
+
+    $line_text = $input_text;
+
+    do {
+      //  [ が現れる位置
+      $pos_tag_b = mb_strpos($line_text, '[');
+
+      //  ] 閉じかっこが現れる位置
+      $pos_tag_e = mb_strpos($line_text, ']');
+
+      //  タグの名前
+      $tag_name = mb_substr($line_text, $pos_tag_b + 1, $pos_tag_e - $pos_tag_b - 1);
+
+      //  タグの名前にhtml付けたやつ
+      $tag_code = ("<form action=\"index.php\"  method=\"post\"><input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" /><input type=\"hidden\" name=\"LoadMore\" value=\"0\" /><input type=\"submit\" value=\"" . $tag_name . "\"></form>");
+
+      //  タグの前にあるテキスト
+      $tag_before = mb_substr($line_text, 0, $pos_tag_b);
+
+      //  タグの後ろにあるテキスト
+      $tag_after = mb_substr($line_text, $pos_tag_e + 1, null);
+
+      $line_text = $tag_before . $tag_code . $tag_after;
+
+    } while (preg_match('/\[.*\]/', $line_text));
+
+    echo ($line_text);
+
+  } else {
+
+    echo ("<p>");
+    echo ($input_text);
+    echo ("</p>");
+  }
+}
+
+
+function show_prev_page($now_page, $tag)
+{
+  echo ("<span>");
+  echo ("<form action=\"\"  method=\"post\">");
+  echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag . "\" />");
+  echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . ($now_page - 1) . "\" />");
+  echo ("<label id=\"prev-label\"  for=\"prev_arrow\">← " . $now_page . "</lavel>");
+  echo ("<input id=\"prev_arrow\"  type=\"submit\" value=\"" . ($now_page - 1) . "\">");
+  echo ("</form>");
+  echo ("</span>");
+}
+
+function show_next_page($now_page, $tag)
+{
+  echo ("<span>");
+  echo ("<form action=\"\"  method=\"post\">");
+  echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag . "\" />");
+  echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . ($now_page + 1) . "\" />");
+  echo ("<label id=\"next-label\"  for=\"next_arrow\">→ " . $now_page + 2 . "</lavel>");
+  echo ("<input id=\"next_arrow\" type=\"submit\" value=\"" . ($now_page + 1) . "\">");
+  echo ("</form>");
+  echo ("</span>");
+}
 
 ?>
 
@@ -124,7 +321,6 @@ $tag = "XXX";
         echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" />");
         echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
         echo ("<input type=\"submit\" value=\"" . $tag_name . "\">");
-
         echo ("</form>");
         echo ("</span>");
       }
@@ -217,55 +413,58 @@ $tag = "XXX";
               $decodedResults_tag = json_decode($html_tag);
               $pages = $decodedResults_tag->relatedPages->links1hop;
 
-              //  ピンがついていない要素(一覧に乗るやつ)を抽出する
-              $pages_unpin = array();
-            }
+              $j = 0;
+              for ($i = $now_page * 6; ($i < count($pages) && ($j < 5)); $i++) {
 
-            $j = 0;
-            for ($i = $now_page * 5; ($i < count($pages) && ($j < 4)); $i++) {
+                $title = $pages[$i]->title;
 
-              // $title = $pages_tag[$i]->title;
-              $title = $pages[$i]->title;
-              $search_result = array_search($title, array_column($pages_all, "title"));
+                //  $pages(個ページ情報に載っている relatedPages 下のオブジェクト) には、pinの有無については載っていない
+                //  pinの有無の判定のために、 $pages_all にアクセスする
+                $search_result = array_search($title, array_column($pages_all, "title"));
 
-              //  ピン止めされていないpageのみ、一覧に表示する
-              if (!$pages_all[$search_result]->pin) {
+                //  ピン止めされていないpageのみ、一覧に表示する
+                if (!$pages_all[$search_result]->pin) {
 
-                $j++;
+                  $j++;
+                  show_article($pages_all, $search_result);
 
-                echo ("<div class=\"blog-article\">\n");
-                echo ("<h2>");
-                echo ($title);
-                echo ("</h2>");
-
-                echo ("<div class=\"article-descriptions\">");
-
-                $index = 0;
-                while ($index <= (count($pages_all[$search_result]->descriptions)) - 1) {
-                  echo ($pages_all[$search_result]->descriptions[$index]);
-                  echo ("<br>");
-                  $index++;
                 }
-                echo ("</div>");
-
-                echo ("<span>");
-                echo ("<form action=\"single_page.php\"  method=\"get\">");
-                echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
-                echo ("</form>");
-                echo ("</span>");
-                echo ("</div>\n");
 
               }
+
+              if (1 <= $now_page) {
+                show_prev_page($now_page, $tag);
+              }
+
+              if ($now_page * 6 + 6 < count($pages)) {
+                show_next_page($now_page, $tag);
+              }
+
+            } else {
+              //  全件検索のとき
+              //  $pages = $pages_unpin;
+        
+              //  "next"ボタンを押すたびに [API呼び出し & ピンの有無の判定] をやるのはダルいので
+        
+              $j = 0;
+              for ($i = $now_page * 5; ($i < count($pages) && ($j <= 4)); $i++) {
+
+                $j++;
+                show_article($pages, $i);
+
+              }
+
+              if (1 <= $now_page) {
+                show_prev_page($now_page, $tag);
+              }
+
+              if ($now_page * 5 + 5 < count($pages)) {
+                show_next_page($now_page, $tag);
+              }
+
             }
 
-            $now_page++;
-            echo ("<span>");
-            echo ("<form action=\"\"  method=\"post\">");
-            echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag . "\" />");
-            echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
-            echo ("<input type=\"submit\" value=\"おためし\">");
-            echo ("</form>");
-            echo ("</span>");
+
           }
         }
         echo ("</div>\n");

@@ -10,10 +10,11 @@
     <h1>
       header
     </h1>
+    <a href="javascript:history.back()">前に戻る</a>
   </header>
   <main>
 
-    <div id="blog-list">
+    <div id="blog-article">
       <?php
       if (array_key_exists('ReadMore', $_GET)) {
 
@@ -29,16 +30,20 @@
         curl_setopt($ch_single, CURLOPT_URL, $single_url);
         curl_setopt($ch_single, CURLOPT_RETURNTRANSFER, true);
         $html_single = curl_exec($ch_single);
-
-        // タイトルを表示
         $decodedResults_single = json_decode($html_single);
 
-        // $descriptions = $decodedResults_single->descriptions;
+
+        //  タイトルを表示
+        echo ("<h2>");
+        echo ($decodedResults_single->title);
+        echo ("</h2>");
+
+
+
+        //  記事を表示
         $lines = $decodedResults_single->lines;
 
         $j = 1;
-
-
         while ($j < count($lines)) {
 
           if (!strcmp("...", $lines[$j]->text)) {
@@ -80,12 +85,8 @@
             $gyazo_json = json_decode($html_gyazo);
             echo ("<img src=\"" . $gyazo_json->url . "\">");
             echo ("<br>");
-
             echo (mb_substr($lines[$j]->text, $pos_gz_e + 1, null));
-
             echo ("</p>");
-
-
 
           } else if (preg_match('/\[.*\shttp\S*\]/', $lines[$j]->text)) {
             //  名前付きのリンク
@@ -103,7 +104,6 @@
 
             //  ] が現れる位置
             $pos_el = mb_strpos($lines[$j]->text, ']');
-
 
             echo (mb_substr($lines[$j]->text, 0, $pos_bl));
             echo (" <a href=\"");
@@ -148,6 +148,38 @@
             echo (" <a href=\"");
             echo (mb_substr($lines[$j]->text, $pos_http, null));
             echo ("\" target=\"_blank\">link</a> ");
+
+
+          } else if (preg_match('/\[.*\]/', $lines[$j]->text)) {
+            //    [音楽]とかのタグを見つける
+            //  タグをクリックしたら、      
+
+            $line_text = $lines[$j]->text;
+
+            do {
+              //  [ が現れる位置
+              $pos_tag_b = mb_strpos($line_text, '[');
+
+              //  ] 閉じかっこが現れる位置
+              $pos_tag_e = mb_strpos($line_text, ']');
+
+              //  タグの名前
+              $tag_name = mb_substr($line_text, $pos_tag_b + 1, $pos_tag_e - $pos_tag_b - 1);
+
+              //  タグの名前にhtml付けたやつ
+              $tag_code = ("<form action=\"index.php\"  method=\"post\"><input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" /><input type=\"hidden\" name=\"LoadMore\" value=\"0\" /><input type=\"submit\" value=\"" . $tag_name . "\"></form>");
+
+              //  タグの前にあるテキスト
+              $tag_before = mb_substr($line_text, 0, $pos_tag_b);
+
+              //  タグの後ろにあるテキスト
+              $tag_after = mb_substr($line_text, $pos_tag_e + 1, null);
+
+              $line_text = $tag_before . $tag_code . $tag_after;
+
+            } while (preg_match('/\[.*\]/', $line_text));
+
+            echo ($line_text);
 
           } else {
 

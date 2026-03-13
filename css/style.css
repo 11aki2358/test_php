@@ -10,6 +10,10 @@ div {
   margin: 1rem;
 }
 
+form{
+  display: inline;
+}
+
 #blog-head {
   background-color: violet;
 }
@@ -26,7 +30,7 @@ div {
   background-color: burlywood;
 }
 
-.article-descriptions{
+.article-descriptions {
   background-color: beige;
 }
 
@@ -54,11 +58,36 @@ div {
   background-color: coral;
 }
 
+.article-tag{
+  background-color: blueviolet;
+}
+
+
+/*  */
 
 #page-nation {
   background-color: yellowgreen;
 }
 
+#prev_arrow,
+#next_arrow {
+  display: none;
+}
+
+#prev-label,
+#next-label {
+  display: block;
+  background-color: pink;
+}
+
 footer {
   background-color: turquoise;
+}
+
+/* single_page */
+
+#blog-article {
+  margin: 1rem;
+  background-color: mediumturquoise;
+
 }
