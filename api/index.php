@@ -1,8 +1,4 @@
-<link rel="stylesheet" href="/css/style.css">
-
-
 <?php
-
 
 $now_page = 0;
 $pages_all;
@@ -16,18 +12,19 @@ function show_article($page_array, $i)
   echo ($title);
   echo ("</h2>");
 
+  echo("<div class=\"article-area\">");
+
   $create_date = date('Y/m/d H:i:s', $page_array[$i]->created);
-  echo ("<div class=\"date\">");
+  echo ("<div class=\"date-box\">");
   echo ("created: " . $create_date);
   echo ("</div>");
 
   $updated_date = date('Y/m/d H:i:s', $page_array[$i]->updated);
-  echo ("<div class=\"date\">");
+  echo ("<div class=\"date-box\">");
   echo ("updated: " . $updated_date);
   echo ("</div>");
 
   echo ("<div class=\"article-descriptions\">");
-
   $index = 0;
   while ($index <= (count($page_array[$i]->descriptions)) - 1) {
     $description_text = $page_array[$i]->descriptions[$index];
@@ -36,13 +33,17 @@ function show_article($page_array, $i)
     show_text($description_text);
     $index++;
   }
+
   echo ("</div>");
-  echo ("<span>");
+
+  echo ("<div class=\"ReadMore-area\">");
   echo ("<form action=\"single_page.php\"  method=\"get\">");
-  echo ("<button type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
+  echo ("<button class=\"ReadMore-button\"  type=\"submit\" name=\"ReadMore\" value=\"" . $title . "\" >もっと読む</button>");
   echo ("</form>");
-  echo ("</span>");
-  echo ("</div>\n");
+  echo ("</div>");
+
+  echo ("</div>");
+  echo ("</div>");
 }
 
 function show_text($input_text)
@@ -188,8 +189,6 @@ function show_text($input_text)
     echo ("</p>");
   }
 }
-
-
 function show_prev_page($now_page, $tag)
 {
   echo ("<span>");
@@ -219,285 +218,233 @@ function show_next_page($now_page, $tag)
 <html>
 
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="googlebot" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="Ryko: Ryko" />
+  <meta property="og:description" content="オタクのサイト。" />
+  <meta property="og:image" content="https://ryko-ryko.vercel.app/images/OGP.png" />
+  <meta name="theme-color" content="#000000">
+  <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+xml">
+  <title>Ryko: Ryko</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
   <header>
-    <h1>
-      header
-    </h1>
-    <a href="https://test-php-11aki2358.vercel.app/index.php" target="_blank">テストページ</a>
+    <nav>
+      <div class="header-logo-menu">
+        <div class="logo-area">
+          <h1><a href="top.html">Ryko: Ryko</a></h1>
+        </div>
+      </div>
+      </div>
+    </nav>
   </header>
+
   <main>
 
-    <div id="blog-head">
-      <ul>
-        <li>
-          メインのサイトへのリンク
-        </li>
-        <li>
-          ブログの紹介
-        </li>
-      </ul>
-      <a href="https://scrapbox.io/scrapboxlab/Scrapbox_REST_API%E3%81%AE%E4%B8%80%E8%A6%A7" target="_blank">Scrapbox
-        REST
-        APIの一覧</a>
-    </div>
+    <article>
+      <h2>blog-head</h2>
+      <div>
+        <ul>
+          <li>
+            メインのサイトへのリンク
+          </li>
+          <li>
+            ブログの紹介
+          </li>
+        </ul>
+        <a href="https://scrapbox.io/scrapboxlab/Scrapbox_REST_API%E3%81%AE%E4%B8%80%E8%A6%A7" target="_blank">Scrapbox
+          REST
+          APIの一覧</a>
+      </div>
+    </article>
 
-    <div id="tag-list">
-      <h2>検索用のタグリスト</h2>
+    <article>
+      <div id="tag-list">
 
-      <p>
-        検索かけない場合には、最新の記事5個を、created順に拾ってくる<br>
-        <a href="https://scrapbox.io/api/pages/ryko-ryko/?skip=0&limit=5&sort=created" target="_blank">link</a>
+        <p>
+          <?php
+
+          $url_all = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
+          // 新しい cURL セッションを初期化
+          // コネクションを開く
+          $ch_all = curl_init();
+          curl_setopt($ch_all, CURLOPT_URL, $url_all);
+          curl_setopt($ch_all, CURLOPT_RETURNTRANSFER, true);
+          $html_all = curl_exec($ch_all);
+
+          $decodedResults_all = json_decode($html_all);
+          $pages_all = $decodedResults_all->pages;
+
+          //  ピンがついていない要素(一覧に乗るやつ)を抽出する
+          $pages_unpin = array();
+          for ($i = 0; $i < count($pages_all); $i++) {
+            //  ピン止めされていないpageのみ、一覧に表示する
+            if (!$pages_all[$i]->pin) {
+              array_push($pages_unpin, $pages_all[$i]);
+            }
+          }
+
+          $pages = $pages_unpin;
+
+          ?>
+        </p>
 
         <?php
 
-        $url_all = "https://scrapbox.io/api/pages/ryko-ryko/?sort=created";
+        $url_tags = "https://scrapbox.io/api/pages/ryko-ryko/tags";
         // 新しい cURL セッションを初期化します
         // コネクションを開く
-        $ch_all = curl_init(); // はじめ
+        $ch_tags = curl_init(); // はじめ
         
         //オプション
-        curl_setopt($ch_all, CURLOPT_URL, $url_all);
-        curl_setopt($ch_all, CURLOPT_RETURNTRANSFER, true);
-        $html_all = curl_exec($ch_all);
-        // var_dump($html);
-        
+        curl_setopt($ch_tags, CURLOPT_URL, $url_tags);
+        curl_setopt($ch_tags, CURLOPT_RETURNTRANSFER, true);
+        $html_tags = curl_exec($ch_tags);
+        $decodedResults_tags = json_decode($html_tags);
+
         // タイトルを表示
-        $decodedResults_all = json_decode($html_all);
-        $pages_all = $decodedResults_all->pages;
-
-        //  ピンがついていない要素(一覧に乗るやつ)を抽出する
-        $pages_unpin = array();
-        for ($i = 0; $i < count($pages_all); $i++) {
-          //  ピン止めされていないpageのみ、一覧に表示する
-          if (!$pages_all[$i]->pin) {
-            array_push($pages_unpin, $pages_all[$i]);
-          }
-        }
-
-        $pages = $pages_unpin;
-
-        ?>
-      </p>
-
-      <ul>
-        <li>
-          Scrapboxにて、ピン止めされたページ<b>tags</b>を作る
-        </li>
-        <li>
-          <b>tags</b>ページの内容を表示する。
-        </li>
-        <li>
-          Scrapboxから読み取った<code>[AAA]</code>とか<code>[BBB]</code>とかの文字列を、タグ用のボタンに変換する。
-        </li>
-        <li><code>AAA</code>ボタンが押された → <code>[AAA]</code>を含む記事を検索する(<a
-            href="https://scrapbox.io/api/pages/ryko-ryko/search/query?q=2026" target="_blank">例: 「2026」を含む記事を検索</a>) →
-          ブログ一覧に表示する
-        </li>
-      </ul>
-
-      <?php
-
-      $url_tags = "https://scrapbox.io/api/pages/ryko-ryko/tags";
-      // 新しい cURL セッションを初期化します
-      // コネクションを開く
-      $ch_tags = curl_init(); // はじめ
-      
-      //オプション
-      curl_setopt($ch_tags, CURLOPT_URL, $url_tags);
-      curl_setopt($ch_tags, CURLOPT_RETURNTRANSFER, true);
-      $html_tags = curl_exec($ch_tags);
-      $decodedResults_tags = json_decode($html_tags);
-
-      // タイトルを表示
-      $lines = $decodedResults_tags->lines;
-
-      echo ("<span>");
-      echo ("<form action=\"\"  method=\"post\">");
-      echo ("<input type=\"hidden\" name=\"test\" value=\"xxx\" />");
-      echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
-      echo ("<input type=\"submit\" value=\"created\">");
-
-      echo ("</form>");
-      echo ("</span>");
-
-
-      for ($i = 1; $i < count($lines); $i++) {
-        $tag_name = preg_replace('/\[|\]/', "", $lines[$i]->text);
+        $lines = $decodedResults_tags->lines;
 
         echo ("<span>");
         echo ("<form action=\"\"  method=\"post\">");
-        echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" />");
+        echo ("<input type=\"hidden\" name=\"test\" value=\"xxx\" />");
         echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
-        echo ("<input type=\"submit\" value=\"" . $tag_name . "\">");
+        echo ("<input type=\"submit\" value=\"created\">");
+
         echo ("</form>");
         echo ("</span>");
-      }
-
-      ?>
-
-    </div>
 
 
+        for ($i = 1; $i < count($lines); $i++) {
+          $tag_name = preg_replace('/\[|\]/', "", $lines[$i]->text);
 
-    <div>
-      <h2>めも</h2>
-
-      <p>
-        初期や検索では、該当するページのtitleのみを気にする(プロジェクト内ページ全文検索 / プロジェクト内のページ情報)。
-        (検索の場合、limit/skipを指定できない点に注意。)
-      </p>
-      <p>
-        各ページ(.blog-article)を表示する際に、記事の冒頭・更新日時・サムネ画像諸々を取得する
-      </p>
-
-      ページの情報の取得
-      <ul>
-        <li>
-          個別のページ情報<br>
-          作成/更新日時や画像URLも取得できる<br>
-          <a href="https://scrapbox.io/api/pages/ryko-ryko/top" target="_blank">画像あり(<b>top</b>)</a><br>
-          <a href="https://scrapbox.io/api/pages/ryko-ryko/20260218" target="_blank">画像無し(<b>20260218</b>)</a>
-        </li>
-        <li>
-          指定したページのプレーンなテキスト。ブラケットなどはそのまま維持(今回は、<b>20260301</b>)
-          <a href="https://scrapbox.io/api/pages/ryko-ryko/20260301/text" target="_blank">link</a>
-        </li>
-        <li>
-          プロジェクト内のページ一覧と、各ページの[リンク]情報が取得できる(作成日時が古い順)<br>
-          <a href="https://scrapbox.io/api/pages/ryko-ryko/search/titles" target="_blank">link</a>
-        </li>
-      </ul>
-
-      全文検索
-      <ul>
-        <li>
-          プロジェクト内ページ全文検索。複数語句検索は出来る、マイナス検索は怪しい?<br>
-          <a href="https://scrapbox.io/api/pages/ryko-ryko/search/query?q=2026" target="_blank">例: 「2026」を含む記事を検索</a>
-        </li>
-      </ul>
-
-      Projectの情報を取得する
-      <ul>
-        <li>プロジェクト内のページ情報<br>
-          <code>limit</code>: 取得するページ情報の最大数<br>
-          <code>skip</code>: 何番目のページから取得するかを指定する<br>
-          <code>sort</code>: ソート方法(`updated`,`created`,`accessed`,`linked`,`views`,`title`,`updatedbyMe`)<br>
-          <a href="https://scrapbox.io/api/pages/ryko-ryko" target="_blank">link</a>
-        </li>
-      </ul>
-
-    </div>
-
-    <div id="blog-list">
-      <h2>ブログ一覧</h2>
-      最新(OR 検索結果)のブログ一覧(最初の5件だけを表示できるようにしたい)
-
-      <p>
-        <?php
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-          if (array_key_exists('test', $_POST)) {
-
-            $tag = htmlspecialchars($_POST['test'], ENT_QUOTES);
-            $now_page = htmlspecialchars($_POST['LoadMore'], ENT_QUOTES);
-
-            if (!($tag === "xxx")) {
-
-              // タグの情報をもとに、APIを叩く
-              //  日本語をURLに含めるときは、エンコードが必要!
-              $url_tag = ("https://scrapbox.io/api/pages/ryko-ryko/" . urlencode($tag));
-              // 新しい cURL セッションを初期化します
-              // コネクションを開く
-        
-              $ch_tag = curl_init(); // はじめ
-        
-              //オプション
-              curl_setopt($ch_tag, CURLOPT_URL, $url_tag);
-              curl_setopt($ch_tag, CURLOPT_RETURNTRANSFER, true);
-              $html_tag = curl_exec($ch_tag);
-
-              $decodedResults_tag = json_decode($html_tag);
-              $pages = $decodedResults_tag->relatedPages->links1hop;
-
-              $j = 0;
-              for ($i = $now_page * 6; ($i < count($pages) && ($j < 5)); $i++) {
-
-                $title = $pages[$i]->title;
-
-                //  $pages(個ページ情報に載っている relatedPages 下のオブジェクト) には、pinの有無については載っていない
-                //  pinの有無の判定のために、 $pages_all にアクセスする
-                $search_result = array_search($title, array_column($pages_all, "title"));
-
-                //  ピン止めされていないpageのみ、一覧に表示する
-                if (!$pages_all[$search_result]->pin) {
-
-                  $j++;
-                  show_article($pages_all, $search_result);
-                }
-              }
-
-              if (1 <= $now_page) {
-                show_prev_page($now_page, $tag);
-              }
-
-              if ($now_page * 6 + 6 < count($pages)) {
-                show_next_page($now_page, $tag);
-              }
-
-            } else {
-              //  全件検索のとき
-              //  $pages = $pages_unpin;
-        
-              //  "next"ボタンを押すたびに [API呼び出し & ピンの有無の判定] をやるのはダルいので
-        
-              $j = 0;
-              for ($i = $now_page * 5; ($i < count($pages) && ($j <= 4)); $i++) {
-
-                $j++;
-                show_article($pages, $i);
-
-              }
-
-              if (1 <= $now_page) {
-                show_prev_page($now_page, $tag);
-              }
-
-              if ($now_page * 5 + 5 < count($pages)) {
-                show_next_page($now_page, $tag);
-              }
-
-            }
-
-
-          }
+          echo ("<span>");
+          echo ("<form action=\"\"  method=\"post\">");
+          echo ("<input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" />");
+          echo ("<input type=\"hidden\" name=\"LoadMore\" value=\"" . $now_page . "\" />");
+          echo ("<input type=\"submit\" value=\"" . $tag_name . "\">");
+          echo ("</form>");
+          echo ("</span>");
         }
-        echo ("</div>\n");
+
         ?>
 
-      </p>
-    </div>
+      </div>
+    </article>
 
+    <article>
+      <!-- <h2>ブログ一覧</h2> -->
+
+      <div id="blog-list">
+        <p>
+          <?php
+
+          if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            if (array_key_exists('test', $_POST)) {
+
+              $tag = htmlspecialchars($_POST['test'], ENT_QUOTES);
+              $now_page = htmlspecialchars($_POST['LoadMore'], ENT_QUOTES);
+
+              if (!($tag === "xxx")) {
+
+                // タグの情報をもとに、APIを叩く
+                //  日本語をURLに含めるときは、エンコードが必要!
+                $url_tag = ("https://scrapbox.io/api/pages/ryko-ryko/" . urlencode($tag));
+                // 新しい cURL セッションを初期化します
+                // コネクションを開く
+          
+                $ch_tag = curl_init(); // はじめ
+          
+                //オプション
+                curl_setopt($ch_tag, CURLOPT_URL, $url_tag);
+                curl_setopt($ch_tag, CURLOPT_RETURNTRANSFER, true);
+                $html_tag = curl_exec($ch_tag);
+
+                $decodedResults_tag = json_decode($html_tag);
+                $pages = $decodedResults_tag->relatedPages->links1hop;
+
+                $j = 0;
+                for ($i = $now_page * 6; ($i < count($pages) && ($j < 5)); $i++) {
+
+                  $title = $pages[$i]->title;
+
+                  //  $pages(個ページ情報に載っている relatedPages 下のオブジェクト) には、pinの有無については載っていない
+                  //  pinの有無の判定のために、 $pages_all にアクセスする
+                  $search_result = array_search($title, array_column($pages_all, "title"));
+
+                  //  ピン止めされていないpageのみ、一覧に表示する
+                  if (!$pages_all[$search_result]->pin) {
+
+                    $j++;
+                    show_article($pages_all, $search_result);
+                  }
+                }
+
+                if (1 <= $now_page) {
+                  show_prev_page($now_page, $tag);
+                }
+
+                if ($now_page * 6 + 6 < count($pages)) {
+                  show_next_page($now_page, $tag);
+                }
+
+              } else {
+                //  全件検索のとき
+                //  $pages = $pages_unpin;
+          
+                //  "next"ボタンを押すたびに [API呼び出し & ピンの有無の判定] をやるのはダルいので
+          
+                $j = 0;
+                for ($i = $now_page * 5; ($i < count($pages) && ($j <= 4)); $i++) {
+
+                  $j++;
+                  show_article($pages, $i);
+
+                }
+
+                if (1 <= $now_page) {
+                  show_prev_page($now_page, $tag);
+                }
+
+                if ($now_page * 5 + 5 < count($pages)) {
+                  show_next_page($now_page, $tag);
+                }
+
+              }
+
+
+            }
+          }
+          echo ("</div>\n");
+          ?>
+
+        </p>
+      </div>
+    </article>
+
+    <h2>ページネーション</h2>
     <div id="page-nation">
-      <h2>ページネーション</h2>
       指定した検索条件のもとで、次の5件 (OR 前の5件)をAPI呼び出しする。と同時に、<b>ブログ一覧</b>の表示を上書きする
     </div>
 
   </main>
+  <!-- フッター -->
+
   <footer>
-    <h1>
-      footer
-    </h1>
+    <button id="back-to-top"></button>
+    <nav>
+      <ul>
+        <li><a href="/index.html" class="btn btn-flat"><span>home</span></a></li>
+      </ul>
+    </nav>
   </footer>
 </body>
-
-<?php
-
-
-?>
 
 
 </html>

@@ -1,4 +1,5 @@
-<link rel="stylesheet" href="/css/style.css">
+
+<link rel="stylesheet" href="/css/archive01/style.css">
 
 <html>
 
@@ -10,7 +11,6 @@
     <h1>
       header
     </h1>
-    
     <a href="javascript:history.back()">前に戻る</a>
   </header>
   <main>

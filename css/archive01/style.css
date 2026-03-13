@@ -1,0 +1,93 @@
+header {
+  background-color: pink;
+}
+
+main {
+  background-color: antiquewhite;
+}
+
+div {
+  margin: 1rem;
+}
+
+form{
+  display: inline;
+}
+
+#blog-head {
+  background-color: violet;
+}
+
+#tag-list {
+  background-color: aliceblue;
+}
+
+#blog-list {
+  background-color: aquamarine;
+}
+
+.blog-article {
+  background-color: burlywood;
+}
+
+.article-descriptions {
+  background-color: beige;
+}
+
+.blog-article p {
+  margin: 0;
+  height: fit-content;
+  min-height: 1rem;
+  padding-bottom: 1rem;
+}
+
+.Gyazo {
+  background-color: cadetblue;
+}
+
+.link-with-name {
+  background-color: red;
+}
+
+.normal-url {
+  background-color: tomato;
+}
+
+
+.normal-url2 {
+  background-color: coral;
+}
+
+.article-tag{
+  background-color: blueviolet;
+}
+
+
+/*  */
+
+#page-nation {
+  background-color: yellowgreen;
+}
+
+#prev_arrow,
+#next_arrow {
+  display: none;
+}
+
+#prev-label,
+#next-label {
+  display: block;
+  background-color: pink;
+}
+
+footer {
+  background-color: turquoise;
+}
+
+/* single_page */
+
+#blog-article {
+  margin: 1rem;
+  background-color: mediumturquoise;
+
+}
