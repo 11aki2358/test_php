@@ -16,6 +16,16 @@ function show_article($page_array, $i)
   echo ($title);
   echo ("</h2>");
 
+  $create_date = date('Y/m/d H:i:s', $page_array[$i]->created);
+  echo ("<div class=\"date\">");
+  echo ("created: " . $create_date);
+  echo ("</div>");
+
+  $updated_date = date('Y/m/d H:i:s', $page_array[$i]->updated);
+  echo ("<div class=\"date\">");
+  echo ("updated: " . $updated_date);
+  echo ("</div>");
+
   echo ("<div class=\"article-descriptions\">");
 
   $index = 0;
@@ -216,6 +226,7 @@ function show_next_page($now_page, $tag)
     <h1>
       header
     </h1>
+    <a href="https://test-php-11aki2358.vercel.app/index.php" target="_blank">テストページ</a>
   </header>
   <main>
 
@@ -394,7 +405,6 @@ function show_next_page($now_page, $tag)
             $tag = htmlspecialchars($_POST['test'], ENT_QUOTES);
             $now_page = htmlspecialchars($_POST['LoadMore'], ENT_QUOTES);
 
-
             if (!($tag === "xxx")) {
 
               // タグの情報をもとに、APIを叩く
@@ -427,9 +437,7 @@ function show_next_page($now_page, $tag)
 
                   $j++;
                   show_article($pages_all, $search_result);
-
                 }
-
               }
 
               if (1 <= $now_page) {

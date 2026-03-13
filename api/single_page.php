@@ -38,6 +38,15 @@
         echo ($decodedResults_single->title);
         echo ("</h2>");
 
+        $create_date = date('Y/m/d H:i:s', $decodedResults_single->created);
+        echo ("<div class=\"date\">");
+        echo ("created: " . $create_date);
+        echo ("</div>");
+
+        $updated_date = date('Y/m/d H:i:s', $decodedResults_single->updated);
+        echo ("<div class=\"date\">");
+        echo ("updated: " . $updated_date);
+        echo ("</div>");
 
 
         //  記事を表示
@@ -153,7 +162,7 @@
           } else if (preg_match('/\[.*\]/', $lines[$j]->text)) {
             //    [音楽]とかのタグを見つける
             //  タグをクリックしたら、      
-
+      
             $line_text = $lines[$j]->text;
 
             do {
@@ -201,6 +210,7 @@
     <h1>
       footer
     </h1>
+    <a href="javascript:history.back()">前に戻る</a>
   </footer>
 </body>
 
