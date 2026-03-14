@@ -48,8 +48,20 @@ function show_article($page_array, $i)
 
 function show_text($input_text)
 {
-  if (!strcmp("...", $input_text)) {
-    //  "..." 以降の行はタグ情報なので、表示しない
+  // if (!strcmp("...", $input_text)) {
+  //   //  "..." 以降の行はタグ情報なので、表示しない
+  // }
+
+  if (preg_match('/^(\s|　)(\s|　)(\s|　)(\s|　)\S/', $input_text)) {
+    $input_text = ("<div class=\"text\"><ul class=\"li-4\"><li>" . mb_substr($input_text, 4, null) . " </li></ul></div>");
+  } else if (preg_match('/^(\s|　)(\s|　)(\s|　)\S/', $input_text)) {
+    $input_text = ("<div class=\"text\"><ul class=\"li-3\"><li>" . mb_substr($input_text, 3, null) . " </li></ul></div>");
+  } else if (preg_match('/^(\s|　)(\s|　)\S/', $input_text)) {
+    $input_text = ("<div class=\"text\"><ul class=\"li-2\"><li>" . mb_substr($input_text, 2, null) . " </li></ul></div>");
+  } else if (preg_match('/^(\s|　)\S/', $input_text)) {
+    $input_text = ("<div class=\"text\"><ul class=\"li-1\"><li>" . mb_substr($input_text, 1, null) . " </li></ul></div>");
+  } else {
+    $input_text = ("<div class=\"text\">" . $input_text . " </div>");
   }
 
   if (preg_match('/\[https:\/\/gyazo.com\/\S*\]/', $input_text)) {
@@ -57,8 +69,6 @@ function show_text($input_text)
 
     //  例: 
     //  [https://gyazo.com/5598422019d8c545c0dfe26b620dcf28]
-
-    echo ("<p class=\"Gyazo\">");
 
     //  [https://gyazo.com/ が現れる位置
     $pos_gz_b = mb_strpos($input_text, '[https://gyazo.com/');
@@ -87,7 +97,6 @@ function show_text($input_text)
     echo ("<img src=\"" . $gyazo_json->url . "\">");
     echo ("<br>");
     echo (mb_substr($input_text, $pos_gz_e + 1, null));
-    echo ("</p>");
 
   } else if (preg_match('/\[.*\shttp\S*\]/', $input_text)) {
     //  名前付きのリンク
@@ -95,7 +104,6 @@ function show_text($input_text)
 
     //  例: 
     //  あいうえお[link name https://www.php.net/manual/ja/function.strpos.php]これがリンク
-    echo ("<p class=\"link-with-name\">");
 
     //  [が現れる位置
     $pos_bl = mb_strpos($input_text, '[');
@@ -120,8 +128,6 @@ function show_text($input_text)
     //  例
     //  あいうえお https://www.webdesignleaves.com/pr/php/php_basic_03.php これがリンク
 
-    echo ("<p class=\"normal-url\">");
-
     //  http が現れる位置
     $pos_http = mb_strpos($input_text, 'http');
 
@@ -133,23 +139,6 @@ function show_text($input_text)
     echo (mb_substr($input_text, $pos_http, $pos_el - $pos_http));
     echo ("\" target=\"_blank\">link</a> ");
     echo (mb_substr($input_text, $pos_el + 1, null));
-
-  } else if (preg_match('/http\S*/', $input_text)) {
-    //  名前のついていない、ただのurl(空白無しで終わるやつ)
-
-    //  例
-    //  あいうえお https://www.webdesignleaves.com/pr/php/php_basic_03.php
-
-    echo ("<p class=\"normal-url2\">");
-
-    //  http が現れる位置
-    $pos_http = mb_strpos($input_text, 'http');
-
-    echo (mb_substr($input_text, 0, $pos_http));
-    echo (" <a href=\"");
-    echo (mb_substr($input_text, $pos_http, null));
-    echo ("\" target=\"_blank\">link</a> ");
-
 
   } else if (preg_match('/\[.*\]/', $input_text)) {
     //    [音楽]とかのタグを見つける
@@ -183,11 +172,9 @@ function show_text($input_text)
     echo ($line_text);
 
   } else {
-
-    echo ("<p>");
     echo ($input_text);
-    echo ("</p>");
   }
+
 }
 function show_prev_page($now_page, $tag)
 {
@@ -250,7 +237,7 @@ function show_next_page($now_page, $tag)
       <h2 style="color:black">(This Bird Has Flown)</h2>
       <div>
         オタクの <span style="text-decoration: line-through">ツイッt</span> ブログ。<br>
-        本拠地は個人サイト : 
+        本拠地は個人サイト :
         <a href="https://ryko-ryko.vercel.app/index.html" target="_blank">Ryko: Ryko</a>
       </div>
     </article>
@@ -434,7 +421,8 @@ function show_next_page($now_page, $tag)
   <!-- フッター -->
 
   <footer>
-    <a href="https://ryko-ryko.vercel.app/index.html" target="_blank" class="banner-link"><img src="/images/banner.png"></a>
+    <a href="https://ryko-ryko.vercel.app/index.html" target="_blank" class="banner-link"><img
+        src="/images/banner.png"></a>
     <button id="back-to-top"></button>
   </footer>
 </body>

@@ -326,6 +326,7 @@ form {
   background-color: var(--type1-main-color);
   font-weight: bold;
   font-size: 1.05rem;
+  margin-right: .2rem;
 }
 
 .tag-label:hover {
@@ -435,30 +436,53 @@ form {
   padding-bottom: 1rem;
 }
 
-/* 
-
-.Gyazo {
-  background-color: cadetblue;
+img {
+  max-width: 80vw;
+  height: fit-content;
+  max-height: 60vh;
 }
 
-.link-with-name {
-  background-color: red;
+.article-descriptions .text,
+.article-area .text {
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  min-height: 1.1rem;
 }
 
-.normal-url {
-  background-color: tomato;
+
+.li-1 {
+  /* background-color: red; */
+  margin: 0;
+  padding: 0;
+  padding-left: 1rem;
+}
+
+.li-2 {
+  /* background-color: olivedrab; */
+  margin: 0;
+  padding: 0;
+  padding-left: 2rem;
+  list-style-type: circle;
+}
+
+.li-3 {
+  /* background-color: aqua; */
+  margin: 0;
+  padding: 0;
+  padding-left: 3rem;
+  list-style: square;
 }
 
 
-.normal-url2 {
-  background-color: coral;
+.li-4 {
+  /* background-color: aqua; */
+  margin: 0;
+  padding: 0;
+  padding-left: 4rem;
+  list-style: square;
+  list-style-type: "+  ";
 }
-
-.article-tag {
-  background-color: blueviolet;
-} 
-  
-*/
 
 
 /*  */
@@ -554,7 +578,7 @@ footer a[target="_blank"].banner-link {
   justify-content: center;
 }
 
-.return-button{
+.return-button {
   border: solid black 2px;
   padding: .5rem;
   font-weight: bold;
@@ -562,7 +586,7 @@ footer a[target="_blank"].banner-link {
   color: black;
 }
 
-.return-button:hover{
+.return-button:hover {
   background-color: var(--type1-main-color);
   color: black;
 }
