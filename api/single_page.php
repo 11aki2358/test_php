@@ -189,7 +189,7 @@
               $tag_name = mb_substr($line_text, $pos_tag_b + 1, $pos_tag_e - $pos_tag_b - 1);
 
               //  タグの名前にhtml付けたやつ
-              $tag_code = ("<span><form action=\"index.php\"  method=\"post\"><input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" /><input type=\"hidden\" name=\"LoadMore\" value=\"0\" /><label for=\"" . $tag_name . "\" class=\"tag-label\">" . $tag_name . "</label><input class=\"hidden-button\" id=\"" . $tag_name . "\"  type=\"submit\" value=\"" . $tag_name . "\"></form></span>");
+              $tag_code = ("<span><form action=\"main.php\"  method=\"post\"><input type=\"hidden\" name=\"test\" value=\"" . $tag_name . "\" /><input type=\"hidden\" name=\"LoadMore\" value=\"0\" /><label for=\"" . $tag_name . "\" class=\"tag-label\">" . $tag_name . "</label><input class=\"hidden-button\" id=\"" . $tag_name . "\"  type=\"submit\" value=\"" . $tag_name . "\"></form></span>");
 
               //  タグの前にあるテキスト
               $tag_before = mb_substr($line_text, 0, $pos_tag_b);
