@@ -14,6 +14,8 @@ function show_article($page_array, $i)
 
   echo ("<div class=\"article-area\">");
 
+  date_default_timezone_set('Asia/Tokyo');
+
   $create_date = date('Y/m/d H:i:s', $page_array[$i]->created);
   echo ("<div class=\"date-box\">");
   echo ("created: " . $create_date);

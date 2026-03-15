@@ -56,6 +56,7 @@
 
         echo ("<div class=\"article-area\">");
 
+        date_default_timezone_set('Asia/Tokyo');
 
         $create_date = date('Y/m/d H:i:s', $decodedResults_single->created);
         echo ("<div class=\"date-box\">");
