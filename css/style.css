@@ -260,7 +260,7 @@ html {
 
 h1,
 h2 {
-  font-family: 'Kanit', sans-serif;
+  font-family: 'Kanit', "M PLUS Rounded 1c", sans-serif;
   text-transform: uppercase;
   transform: scale(1, 1.2);
 }
@@ -274,7 +274,7 @@ h1 {
   font-size: 7.5vw;
   transform: scale(1, 1.2);
   color: var(--type1-link-color1);
-  font-family: 'Kanit', sans-serif;
+  font-family: 'Kanit', "M PLUS Rounded 1c", sans-serif;
 }
 
 h1:hover {
@@ -481,7 +481,7 @@ img {
   padding: 0;
   padding-left: 4rem;
   list-style: square;
-  list-style-type: "+  ";
+  list-style-type: disc;
 }
 
 
@@ -564,9 +564,13 @@ footer #back-to-top:hover {
   /* transform: translateX(0.2vh); */
 }
 
-footer a[target="_blank"].banner-link {
-  position: fixed;
-  bottom: 1vh;
+footer a[target="_blank"].banner-link{
+  /* position: fixed; */
+  position: absolute;
+  display: block;
+  margin-bottom: 2vh;
+  margin-top: 2vh;
+  height: 6vh;
   left: 5%;
   z-index: 9;
 }

@@ -11,7 +11,7 @@
   <meta property="og:image" content="https://ryko-ryko.vercel.app/images/OGP.png" />
   <meta name="theme-color" content="#000000">
   <link rel="shortcut icon" href="/images/favicon.svg" type="image/svg+xml">
-  <title>Ryko: Ryko</title>
+  <title>Ryko: Ryko: Ryko</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -20,7 +20,7 @@
     <nav>
       <div class="header-logo-menu">
         <div class="logo-area">
-          <h1><a href="javascript:history.back()">Ryko: Ryko</a></h1>
+          <h1><a href="javascript:history.back()">Ryko: Ryko: Ryko</a></h1>
         </div>
       </div>
       </div>
