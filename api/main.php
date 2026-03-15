@@ -236,9 +236,9 @@ function show_next_page($now_page, $tag)
   <main>
 
     <article>
-      <h2 style="color:black">(This Bird Has Flown)</h2>
+      <h2 style="color:black">a day in the ...</h2>
       <div>
-        オタクの <span style="text-decoration: line-through">ツイッt</span> ブログ。<br>
+        オタクのブログ。<br>
         本拠地は個人サイト :
         <a href="https://ryko-ryko.vercel.app/index.html" target="_blank">Ryko: Ryko</a>
       </div>
