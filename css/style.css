@@ -494,8 +494,11 @@ img {
   padding: 1rem;
   justify-content: space-between;
   align-items: center;
-
   padding-left: 2rem;
+}
+
+#page-nation-area form{
+  margin: 0;
 }
 
 #prev_arrow,
@@ -509,15 +512,13 @@ img {
   font-weight: bold;
   display: inline;
   padding: .4rem;
-  border: solid black 2px;
-  background-color: black;
-  color: white;
+  border: solid black 2px; 
 }
 
 
 #now-label {
-  background-color: white;
-  color: black;
+  background-color: black;
+  color: white;
 }
 
 #prev-label:hover,
