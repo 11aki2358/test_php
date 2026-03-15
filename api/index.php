@@ -380,9 +380,14 @@ function show_next_page($now_page, $tag)
                 echo ("<div id=\"page-nation-area\">");
                 if (1 <= $now_page) {
                   show_prev_page($now_page, $tag);
+                }else{
+                  echo("<span>　　　</span>");
                 }
+                echo ("<form><label id=\"now-label\">" . ($now_page + 1) . "</label></form>");
                 if ($now_page * 6 + 6 < count($pages)) {
                   show_next_page($now_page, $tag);
+                }else{
+                  echo("<span>　　　</span>");
                 }
                 echo ("</div>");
 
@@ -403,10 +408,14 @@ function show_next_page($now_page, $tag)
                 echo ("<div id=\"page-nation-area\">");
                 if (1 <= $now_page) {
                   show_prev_page($now_page, $tag);
+                }else{
+                  echo("<span>　　　</span>");
                 }
                 echo ("<form><label id=\"now-label\">" . ($now_page + 1) . "</label></form>");
                 if ($now_page * 5 + 5 < count($pages)) {
                   show_next_page($now_page, $tag);
+                }else{
+                  echo("<span>　　　</span>");
                 }
                 echo ("</div>");
               }
