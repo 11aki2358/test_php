@@ -240,7 +240,7 @@ function show_next_page($now_page, $tag)
       <div>
         オタクのブログ。<br>
         本拠地は個人サイト :
-        <a href="https://ryko-ryko.vercel.app/index.html" target="_blank">Ryko: Ryko</a>
+        <a href="https://ryko-ryko.vercel.app/index.html">Ryko: Ryko</a>
       </div>
     </article>
 
